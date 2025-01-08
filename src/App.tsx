@@ -1,33 +1,79 @@
+import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import Chart from "./Components/Chart";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const salesData = [
-  { name: "Jan", value: 400 },
-  { name: "Fev", value: 300 },
-  { name: "Mar", value: 600 },
-  { name: "Abr", value: 800 },
-  { name: "Mai", value: 500 },
-];
+type data = {
+  name?: string;
+  users?: number;
+  value?: number;
+  active?: number;
+};
 
-const usersData = [
-  { name: "Jan", users: 1500, active: 1000 },
-  { name: "Fev", users: 2000, active: 1300 },
-  { name: "Mar", users: 1800, active: 1200 },
-  { name: "Abr", users: 2400, active: 1800 },
-  { name: "Mai", users: 2800, active: 2000 },
+interface ChartConfig {
+  id: string;
+  title: string;
+  data: data[];
+  lines: Array<{
+    dataKey: string;
+    stroke: string;
+    name: string;
+  }>;
+  layout: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+}
+
+const chartConfigs: ChartConfig[] = [
+  {
+    id: "sales",
+    title: "Vendas Mensais",
+    data: [
+      { name: "Jan", value: 400 },
+      { name: "Fev", value: 300 },
+      { name: "Mar", value: 600 },
+      { name: "Abr", value: 800 },
+      { name: "Mai", value: 500 },
+    ],
+    lines: [
+      {
+        dataKey: "value",
+        stroke: "#8884d8",
+        name: "Vendas",
+      },
+    ],
+    layout: { x: 0, y: 0, w: 6, h: 8 },
+  },
+  {
+    id: "users",
+    title: "Usuários Ativos",
+    data: [
+      { name: "Jan", users: 1500, active: 1000 },
+      { name: "Fev", users: 2000, active: 1300 },
+      { name: "Mar", users: 1800, active: 1200 },
+      { name: "Abr", users: 2400, active: 1800 },
+      { name: "Mai", users: 2800, active: 2000 },
+    ],
+    lines: [
+      {
+        dataKey: "users",
+        stroke: "#8884d8",
+        name: "Total Usuários",
+      },
+      {
+        dataKey: "active",
+        stroke: "#82ca9d",
+        name: "Usuários Ativos",
+      },
+    ],
+    layout: { x: 6, y: 0, w: 6, h: 8 },
+  },
 ];
 
 interface AppProps {
@@ -36,14 +82,45 @@ interface AppProps {
 }
 
 function App({ className = "layout", rowHeight = 30 }: AppProps) {
-  // Layout inicial para o grid
-  const layout = [
-    { i: "sales", x: 0, y: 0, w: 6, h: 8 },
-    { i: "users", x: 6, y: 0, w: 6, h: 8 },
-  ];
+  const [selectedCharts, setSelectedCharts] = React.useState<string[]>([
+    "sales",
+    "users",
+  ]);
+
+  const layout = chartConfigs
+    .filter((chart) => selectedCharts.includes(chart.id))
+    .map((chart) => ({
+      i: chart.id,
+      ...chart.layout,
+    }));
+
+  const toggleChart = (chartId: string) => {
+    setSelectedCharts((prev) =>
+      prev.includes(chartId)
+        ? prev.filter((id) => id !== chartId)
+        : [...prev, chartId]
+    );
+  };
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
+      <div className="mb-4">
+        <h2 className="text-lg font-bold mb-2">Selecione os gráficos:</h2>
+        {chartConfigs.map((chart) => (
+          <button
+            key={chart.id}
+            onClick={() => toggleChart(chart.id)}
+            className={`mr-2 px-4 py-2 rounded ${
+              selectedCharts.includes(chart.id)
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            {chart.title}
+          </button>
+        ))}
+      </div>
+
       <ResponsiveGridLayout
         className={className}
         layouts={{ lg: layout }}
@@ -53,61 +130,17 @@ function App({ className = "layout", rowHeight = 30 }: AppProps) {
         isDraggable
         isResizable
       >
-        <div key="sales" className="bg-white p-4 rounded-lg shadow">
-          <div style={{ width: "100%", height: "100%", minHeight: "200px" }}>
-            <h2 className="text-xl font-bold mb-4">Vendas Mensais</h2>
-            <ResponsiveContainer>
-              <LineChart
-                data={salesData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#8884d8"
-                  name="Vendas"
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div key="users" className="bg-white p-4 rounded-lg shadow">
-          <div style={{ width: "100%", height: "100%", minHeight: "200px" }}>
-            <h2 className="text-xl font-bold mb-4">Usuários Ativos</h2>
-            <ResponsiveContainer>
-              <LineChart
-                data={usersData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="users"
-                  stroke="#8884d8"
-                  name="Total Usuários"
-                  activeDot={{ r: 8 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="active"
-                  stroke="#82ca9d"
-                  name="Usuários Ativos"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {chartConfigs
+          .filter((chart) => selectedCharts.includes(chart.id))
+          .map((chart) => (
+            <div key={chart.id} className="bg-white p-4 rounded-lg shadow">
+              <Chart
+                title={chart.title}
+                data={chart.data}
+                lines={chart.lines}
+              />
+            </div>
+          ))}
       </ResponsiveGridLayout>
     </div>
   );
