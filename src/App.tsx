@@ -3,34 +3,11 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import Chart from "./Components/Chart";
+import { LineChartConfig } from "./@types/chart/LineChart/lineChartConfig";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-type data = {
-  name?: string;
-  users?: number;
-  value?: number;
-  active?: number;
-};
-
-interface ChartConfig {
-  id: string;
-  title: string;
-  data: data[];
-  lines: Array<{
-    dataKey: string;
-    stroke: string;
-    name: string;
-  }>;
-  layout: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  };
-}
-
-const chartConfigs: ChartConfig[] = [
+const chartConfigs: LineChartConfig[] = [
   {
     id: "sales",
     title: "Vendas Mensais",
@@ -81,7 +58,7 @@ interface AppProps {
   rowHeight?: number;
 }
 
-function App({ className = "layout", rowHeight = 30 }: AppProps) {
+export const App = ({ className = "layout", rowHeight = 30 }: AppProps) => {
   const [selectedCharts, setSelectedCharts] = React.useState<string[]>([
     "sales",
     "users",
@@ -144,6 +121,4 @@ function App({ className = "layout", rowHeight = 30 }: AppProps) {
       </ResponsiveGridLayout>
     </div>
   );
-}
-
-export default App;
+};

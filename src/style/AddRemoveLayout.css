@@ -1,0 +1,36 @@
+/* AddRemoveLayout.css */
+.box {
+  background-color: #4caf50; /* Cor de fundo */
+  color: white; /* Cor do texto */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  border: 2px solid #333; /* Borda */
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animação ao interagir */
+}
+
+.box:hover {
+  transform: scale(1.05); /* Efeito de zoom */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+}
+
+.add {
+  background-color: #2196f3; /* Azul para o botão de adicionar */
+  color: white;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 14px;
+  color: #ff1744; /* Cor para o botão de remoção */
+  cursor: pointer;
+}
